@@ -89,7 +89,7 @@ public class MySystem {
 
         // Setting location of the system on the sector map
         StarSystemAPI system = sector.createStarSystem("My Star");
-        system.getLocation().set(-39000, 39000); // top leftish
+        system.getLocation().set(21000, -10000); // near Diable Avionics for testing
 
         // Creating the 'Star' / center of the system and adding a light color
         PlanetAPI petrichorBlackHole = system.initStar("Petrichor", "black_hole", 1100f, 450);
