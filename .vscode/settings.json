@@ -3,6 +3,7 @@
         "lib/**/*.jar",
         "c:\\Users\\kyleb\\Desktop\\Starsector\\0.98-RC8\\starsector-core\\starfarer.api.jar",
         "c:\\Users\\kyleb\\Desktop\\Starsector\\0.98-RC8\\mods\\LazyLib\\jars\\LazyLib.jar",
-        "c:\\Users\\kyleb\\Desktop\\Starsector\\0.98-RC8\\starsector-core\\lwjgl_util.jar"
+        "c:\\Users\\kyleb\\Desktop\\Starsector\\0.98-RC8\\starsector-core\\lwjgl_util.jar",
+        "c:\\Users\\kyleb\\Desktop\\Starsector\\0.98-RC8\\starsector-core\\log4j-1.2.9.jar"
     ]
 }
