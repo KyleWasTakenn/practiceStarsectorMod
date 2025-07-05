@@ -1,0 +1,15 @@
+{
+	"id":"mymod",
+	"name":"My Mod",
+	"author":"Veil",
+	"version":"0.0.1a",
+	"description":"Epic mod. Alright man!!!",
+    "gameVersion": "0.98a",
+	"modPlugin":"mymod.example.MyModPlugin",
+    "dependencies": [
+        {
+            "id": "lw_lazylib",
+            "name": "LazyLib"
+        }
+    ]
+}
