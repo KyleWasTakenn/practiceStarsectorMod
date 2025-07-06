@@ -83,7 +83,7 @@ public class MySystem {
     final float stableLocation1Dist = 4000f;
     final float petrichorStationDist = 3000f;
 
-    final float jumpFringeDist = 12000;
+    final float jumpFringeDist = 8000;
 
     // This method will generate the star, planets, and other objects in the sector
     // when invoked
@@ -94,7 +94,7 @@ public class MySystem {
         system.getLocation().set(21000, -10000); // near Diable Avionics for testing
 
         // Creating the 'Star' / center of the system and adding a light color
-        PlanetAPI petrichorBlackHole = system.initStar("petrichor_bh", "black_hole", 650f, 450);
+        PlanetAPI petrichorBlackHole = system.initStar("petrichor_bh", "black_hole", 150f, 450);
         system.setLightColor(new Color(142, 81, 223));
 
         // Creating stable point entities, and setting their location.
@@ -108,7 +108,7 @@ public class MySystem {
 
         SectorEntityToken petrichorStation = system.addCustomEntity("petrichor_station", "Petrichor Station",
                 "mymod_petrichor_station", "pirates");
-        petrichorStation.setCircularOrbit(petrichorBlackHole, 0, petrichorStationDist, 220);
+        petrichorStation.setCircularOrbitPointingDown(petrichorBlackHole, 0, petrichorStationDist, 220);
         petrichorStation.setCustomDescriptionId("test_petrichor_station");
 
         // Creating the market for a planet / station:
@@ -144,6 +144,12 @@ public class MySystem {
                 Commodities.ALPHA_CORE);
         petrichorMarket.getIndustry(Industries.ORBITALWORKS).setAICoreId(Commodities.ALPHA_CORE);
 
+        // Manual jumppoint while there are no valid markers to auto generate any
+        JumpPointAPI jumpPointFringe = Global.getFactory().createJumpPoint("fringe_jump", "Fringe System Jump");
+        jumpPointFringe.setCircularOrbit(system.getEntityById("petrichor_bh"), 2,
+                jumpFringeDist, 4000f);
+        jumpPointFringe.setStandardWormholeToHyperspaceVisual();
+
         // helper logic from Varya for creating automatic jump points.
         system.autogenerateHyperspaceJumpPoints(true, false);
 
@@ -158,7 +164,6 @@ public class MySystem {
         // Background image for the system
         system.setBackgroundTextureFilename("graphics/backgrounds/hyperspace1.jpg"); // base game background
                                                                                      // for testing
-
     }
 
 }
