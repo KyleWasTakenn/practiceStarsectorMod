@@ -96,6 +96,7 @@ public class MySystem {
         system.setLightColor(new Color(142, 81, 223));
 
         // Creating stable point entities, and setting their location.
+
         SectorEntityToken petrichorStableLocation1 = system.addCustomEntity("petrichor_stableLocation1",
                 "Stable Location", "stable_location", Factions.NEUTRAL);
         // setCircularOrbit needs an object of type SectorEntityToken, a starting angle
@@ -114,7 +115,7 @@ public class MySystem {
                 stableLocation1Dist, 740);
 
         SectorEntityToken petrichorStation = system.addCustomEntity("petrichor_station", "Petrichor Station",
-                "station_hightech_3", "pirates");
+                "graphics/stations/station_hightech_3", "pirates");
         petrichorStation.setCircularOrbit(petrichorBlackHole, 0, petrichorStationDist, 220);
         petrichorStation.setCustomDescriptionId("test_petrichor_station");
 
@@ -145,8 +146,10 @@ public class MySystem {
                 false);
 
         // Inserting AI cores into industries
+
         petrichorMarket.getIndustry(Industries.MILITARYBASE).setAICoreId(Commodities.ALPHA_CORE);
-        petrichorMarket.getIndustry(Industries.BATTLESTATION_HIGH).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(Industries.BATTLESTATION_HIGH).setAICoreId(
+                Commodities.ALPHA_CORE);
         petrichorMarket.getIndustry(Industries.ORBITALWORKS).setAICoreId(Commodities.ALPHA_CORE);
 
         // Background image for the system
