@@ -10,16 +10,20 @@ import com.fs.starfarer.api.campaign.econ.EconomyAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.*;
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
+import com.fs.starfarer.api.impl.campaign.procgen.StarGenDataSpec;
+import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator;
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
+import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
 
 import org.lazywizard.lazylib.MathUtils;
 
 public class MySystem {
 
-    /**
-     * Shorthand function for adding a market -- this is derived from tahlan mod
-     */
+    /* HELPER FUNCTIONS */
+
+    /* DERRIVED FROM TAHLAN SHIPWORKS */
+    /* Picked up from Varya tutorial. Used for creating marketplaces easily. */
     public static MarketAPI addMarketplace(String factionID, SectorEntityToken primaryEntity,
             List<SectorEntityToken> connectedEntities, String name,
             int popSize, List<String> marketConditions, List<String> submarkets, List<String> industries, float tariff,
@@ -79,14 +83,57 @@ public class MySystem {
 
     }
 
+    /* DERRIVED FROM TAHLAN SHIPWORKS */
+    /* Helper method for creating an event horizon around black hole */
+    /* Comments by me so I can remember wtf is going on later */
+    protected final void setBlackHole(PlanetAPI star, StarSystemAPI system) {
+        StarCoronaTerrainPlugin coronaPlugin = Misc.getCoronaFor(star);
+
+        // If a carona is present on the star, remove it.
+        if (coronaPlugin != null)
+            system.removeEntity(coronaPlugin.getEntity());
+
+        // Gets the stars data, stores is in a variable.
+        StarGenDataSpec starData = (StarGenDataSpec) Global.getSettings().getSpec(StarGenDataSpec.class,
+                star.getSpec().getPlanetType(), false);
+
+        // Calculates the carona size for reuse
+        float corona = star.getRadius() * (starData.getCoronaMult()
+                + starData.getCoronaVar() * (StarSystemGenerator.random.nextFloat() - 0.5F));
+
+        // If carona size is below the minimum, sets equal to minimum.
+        if (corona < starData.getCoronaMin())
+            corona = starData.getCoronaMin();
+
+        // Uses CaronaParams class to create an event horizon.
+        system.addTerrain(
+                "event_horizon",
+                new StarCoronaTerrainPlugin.CoronaParams(
+                        star.getRadius() + corona, (star.getRadius() + corona) / 2.0F,
+                        (SectorEntityToken) star, starData.getSolarWind(),
+                        starData.getMinFlare() + (starData.getMaxFlare() - starData.getMinFlare())
+                                * StarSystemGenerator.random.nextFloat(),
+                        starData.getCrLossMult()));
+
+        // Creates an entity token for the event horizon using the carona params, and
+        // places it in orbit around the star.
+        SectorEntityToken eventHorizon = system.addTerrain("event_horizon", new StarCoronaTerrainPlugin.CoronaParams(
+                star.getRadius() + corona, (star.getRadius() + corona) / 2.0F, (SectorEntityToken) star,
+                starData.getSolarWind(),
+                starData.getMinFlare()
+                        + (starData.getMaxFlare() - starData.getMinFlare()) * StarSystemGenerator.random.nextFloat(),
+                starData.getCrLossMult()));
+        eventHorizon.setCircularOrbit((SectorEntityToken) star, 0.0F, 0.0F, 100.0F);
+    }
+
     // Distance variables (For easier adjustment and tweaks)
     final float stableLocation1Dist = 4000f;
-    final float petrichorStationDist = 3000f;
+    final float petrichorStationDist = 750f;
 
     final float jumpFringeDist = 8000;
 
-    // This method will generate the star, planets, and other objects in the sector
-    // when invoked
+    /* GENERATE METHOD */
+    /* Invoke to generate the system */
     public void generate(SectorAPI sector) {
 
         // Setting location of the system on the sector map
@@ -94,11 +141,20 @@ public class MySystem {
         system.getLocation().set(21000, -10000); // near Diable Avionics for testing
 
         // Creating the 'Star' / center of the system and adding a light color
-        PlanetAPI petrichorBlackHole = system.initStar("petrichor_bh", "black_hole", 150f, 450);
+        PlanetAPI petrichorBlackHole = system.initStar("petrichor_bh", "black_hole", 150f, 0f);
         system.setLightColor(new Color(142, 81, 223));
 
-        // Creating stable point entities, and setting their location.
+        StarCoronaTerrainPlugin starCarona = Misc.getCoronaFor(petrichorBlackHole);
+        if (starCarona != null)
+            system.removeEntity(starCarona.getEntity());
 
+        /*
+         * star, terrain type, extra radius, wind burn level, flare probability,
+         * crlossmult
+         */
+        system.addCorona(petrichorBlackHole, "event_horizon", 350f, -10, 0, 25);
+
+        // Creating stable point entities, and setting their location.
         SectorEntityToken petrichorStableLocation1 = system.addCustomEntity("petrichor_stableLocation1",
                 "Stable Location", "stable_location", Factions.NEUTRAL);
         // setCircularOrbit needs an object of type SectorEntityToken, a starting angle
@@ -138,7 +194,6 @@ public class MySystem {
                 false);
 
         // Inserting AI cores into industries
-
         petrichorMarket.getIndustry(Industries.MILITARYBASE).setAICoreId(Commodities.ALPHA_CORE);
         petrichorMarket.getIndustry(Industries.BATTLESTATION_HIGH).setAICoreId(
                 Commodities.ALPHA_CORE);
