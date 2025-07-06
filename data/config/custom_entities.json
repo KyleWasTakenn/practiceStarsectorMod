@@ -1,0 +1,22 @@
+{
+	"mymod_petrichor_station":{
+		"defaultName":"Petrichor Station",
+		"defaultRadius":70,
+		"customDescriptionId":"mymod_petrichor_station",
+		"interactionImage":"graphics/illustrations/jangala_station.jpg",
+		"icon":"graphics/icons/station0.png",
+		"iconWidth":24,
+		"iconHeight":24,
+		"sprite":"graphics/mm/stations/station_hightech_3.png",
+		"spriteWidth":240,
+		"spriteHeight":250,
+		"renderShadow":true,
+		"useLightColor":true,
+		"showInCampaign":true,
+		"showIconOnMap":true,
+		"showNameOnMap":false,
+		"scaleNameWithZoom":false,
+		"tags":["station"],
+		"layers":[STATIONS]
+	}
+}

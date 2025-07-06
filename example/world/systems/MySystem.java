@@ -9,6 +9,9 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.EconomyAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.*;
+import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
+import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
+import com.fs.starfarer.api.util.Misc;
 
 import org.lazywizard.lazylib.MathUtils;
 
@@ -78,21 +81,20 @@ public class MySystem {
 
     // Distance variables (For easier adjustment and tweaks)
     final float stableLocation1Dist = 4000f;
-    final float stableLocation2Dist = 2870f;
-    final float stableLocation3Dist = 5130f;
-
     final float petrichorStationDist = 3000f;
+
+    final float jumpFringeDist = 12000;
 
     // This method will generate the star, planets, and other objects in the sector
     // when invoked
     public void generate(SectorAPI sector) {
 
         // Setting location of the system on the sector map
-        StarSystemAPI system = sector.createStarSystem("My Star");
+        StarSystemAPI system = sector.createStarSystem("Petrichor");
         system.getLocation().set(21000, -10000); // near Diable Avionics for testing
 
         // Creating the 'Star' / center of the system and adding a light color
-        PlanetAPI petrichorBlackHole = system.initStar("Petrichor", "black_hole", 1100f, 450);
+        PlanetAPI petrichorBlackHole = system.initStar("petrichor_bh", "black_hole", 650f, 450);
         system.setLightColor(new Color(142, 81, 223));
 
         // Creating stable point entities, and setting their location.
@@ -104,18 +106,8 @@ public class MySystem {
         petrichorStableLocation1.setCircularOrbit(petrichorBlackHole, MathUtils.getRandomNumberInRange(0f, 360f),
                 stableLocation1Dist, 520);
 
-        SectorEntityToken petrichorStableLocation2 = system.addCustomEntity("petrichor_stableLocation1",
-                "Stable Location", "stable_location", Factions.NEUTRAL);
-        petrichorStableLocation2.setCircularOrbit(petrichorBlackHole, MathUtils.getRandomNumberInRange(0f, 360f),
-                stableLocation1Dist, 200);
-
-        SectorEntityToken petrichorStableLocation3 = system.addCustomEntity("petrichor_stableLocation1",
-                "Stable Location", "stable_location", Factions.NEUTRAL);
-        petrichorStableLocation3.setCircularOrbit(petrichorBlackHole, MathUtils.getRandomNumberInRange(0f, 360f),
-                stableLocation1Dist, 740);
-
         SectorEntityToken petrichorStation = system.addCustomEntity("petrichor_station", "Petrichor Station",
-                "graphics/stations/station_hightech_3", "pirates");
+                "mymod_petrichor_station", "pirates");
         petrichorStation.setCircularOrbit(petrichorBlackHole, 0, petrichorStationDist, 220);
         petrichorStation.setCustomDescriptionId("test_petrichor_station");
 
@@ -151,6 +143,17 @@ public class MySystem {
         petrichorMarket.getIndustry(Industries.BATTLESTATION_HIGH).setAICoreId(
                 Commodities.ALPHA_CORE);
         petrichorMarket.getIndustry(Industries.ORBITALWORKS).setAICoreId(Commodities.ALPHA_CORE);
+
+        // helper logic from Varya for creating automatic jump points.
+        system.autogenerateHyperspaceJumpPoints(true, false);
+
+        HyperspaceTerrainPlugin plugin = (HyperspaceTerrainPlugin) Misc.getHyperspaceTerrain().getPlugin();
+        NebulaEditor editor = new NebulaEditor(plugin);
+        float minRadius = plugin.getTileSize() * 2f;
+
+        float radius = system.getMaxRadiusInHyperspace();
+        editor.clearArc(system.getLocation().x, system.getLocation().y, 0, radius + minRadius, 0, 360f);
+        editor.clearArc(system.getLocation().x, system.getLocation().y, 0, radius + minRadius, 0, 360f, 0.25f);
 
         // Background image for the system
         system.setBackgroundTextureFilename("graphics/backgrounds/hyperspace1.jpg"); // base game background
