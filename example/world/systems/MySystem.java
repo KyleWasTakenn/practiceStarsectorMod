@@ -153,7 +153,8 @@ public class MySystem {
         petrichorMarket.getIndustry(Industries.ORBITALWORKS).setAICoreId(Commodities.ALPHA_CORE);
 
         // Background image for the system
-        system.setBackgroundTextureFilename("graphics/backgrounds/hyperspace1.jpg"); // base game background for testing
+        system.setBackgroundTextureFilename("graphics/backgrounds/hyperspace1.jpg"); // base game background
+                                                                                     // for testing
 
     }
 
