@@ -144,14 +144,13 @@ public class MySystem {
         PlanetAPI petrichorBlackHole = system.initStar("petrichor_bh", "black_hole", 150f, 0f);
         system.setLightColor(new Color(142, 81, 223));
 
+        // Removing the corona entity completely
         StarCoronaTerrainPlugin starCarona = Misc.getCoronaFor(petrichorBlackHole);
         if (starCarona != null)
             system.removeEntity(starCarona.getEntity());
 
-        /*
-         * star, terrain type, extra radius, wind burn level, flare probability,
-         * crlossmult
-         */
+        // starName, terrainType, terrainRadius, windBurnLevel
+        // flareProbability, crLossMult
         system.addCorona(petrichorBlackHole, "event_horizon", 350f, -10, 0, 25);
 
         // Creating stable point entities, and setting their location.
@@ -168,7 +167,6 @@ public class MySystem {
         petrichorStation.setCustomDescriptionId("test_petrichor_station");
 
         // Creating the market for a planet / station:
-
         // factionID, PlanetAPI, Industries (can be null), display name, market size
         // (int), market conditions (can be null), submarkets (black market etc)
         MarketAPI petrichorMarket = addMarketplace("pirates", petrichorStation, null, "Petrichor Station", 4,
@@ -191,7 +189,7 @@ public class MySystem {
                         Industries.WAYSTATION),
                 0.05f,
                 false,
-                false);
+                true);
 
         // Inserting AI cores into industries
         petrichorMarket.getIndustry(Industries.MILITARYBASE).setAICoreId(Commodities.ALPHA_CORE);
@@ -199,14 +197,16 @@ public class MySystem {
                 Commodities.ALPHA_CORE);
         petrichorMarket.getIndustry(Industries.ORBITALWORKS).setAICoreId(Commodities.ALPHA_CORE);
 
-        // Manual jumppoint while there are no valid markers to auto generate any
-        JumpPointAPI jumpPointFringe = Global.getFactory().createJumpPoint("fringe_jump", "Fringe System Jump");
-        jumpPointFringe.setCircularOrbit(system.getEntityById("petrichor_bh"), 2,
-                jumpFringeDist, 4000f);
-        jumpPointFringe.setStandardWormholeToHyperspaceVisual();
+        // Manual jumppoint creation
+        // JumpPointAPI jumpPointFringe =
+        // Global.getFactory().createJumpPoint("fringe_jump", "Fringe System Jump");
+        // jumpPointFringe.setCircularOrbit(system.getEntityById("petrichor_bh"), 2,
+        // jumpFringeDist, 4000f);
+        // jumpPointFringe.setStandardWormholeToHyperspaceVisual();
+        // system.addEntity(jumpPointFringe);
 
         // helper logic from Varya for creating automatic jump points.
-        system.autogenerateHyperspaceJumpPoints(true, false);
+        system.autogenerateHyperspaceJumpPoints(true, true);
 
         HyperspaceTerrainPlugin plugin = (HyperspaceTerrainPlugin) Misc.getHyperspaceTerrain().getPlugin();
         NebulaEditor editor = new NebulaEditor(plugin);
