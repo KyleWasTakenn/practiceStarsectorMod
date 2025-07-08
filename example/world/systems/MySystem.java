@@ -5,15 +5,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fs.starfarer.api.Global;
+
 import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.impl.campaign.ids.*;
+import com.fs.starfarer.api.impl.campaign.terrain.*;
+import com.fs.starfarer.api.impl.campaign.procgen.*;
+
 import com.fs.starfarer.api.campaign.econ.EconomyAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.impl.campaign.ids.*;
-import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
-import com.fs.starfarer.api.impl.campaign.procgen.StarGenDataSpec;
-import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator;
-import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
-import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin;
+
+// import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
+// import com.fs.starfarer.api.impl.campaign.procgen.StarGenDataSpec;
+// import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator;
+// import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
+// import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
 
 import org.lazywizard.lazylib.MathUtils;
@@ -89,7 +94,7 @@ public class MySystem {
     protected final void setBlackHole(PlanetAPI star, StarSystemAPI system) {
         StarCoronaTerrainPlugin coronaPlugin = Misc.getCoronaFor(star);
 
-        // If a carona is present on the star, remove it.
+        // If a corona is present on the star, remove it.
         if (coronaPlugin != null)
             system.removeEntity(coronaPlugin.getEntity());
 
@@ -97,15 +102,15 @@ public class MySystem {
         StarGenDataSpec starData = (StarGenDataSpec) Global.getSettings().getSpec(StarGenDataSpec.class,
                 star.getSpec().getPlanetType(), false);
 
-        // Calculates the carona size for reuse
+        // Calculates the corona size for reuse
         float corona = star.getRadius() * (starData.getCoronaMult()
                 + starData.getCoronaVar() * (StarSystemGenerator.random.nextFloat() - 0.5F));
 
-        // If carona size is below the minimum, sets equal to minimum.
+        // If corona size is below the minimum, sets equal to minimum.
         if (corona < starData.getCoronaMin())
             corona = starData.getCoronaMin();
 
-        // Uses CaronaParams class to create an event horizon.
+        // Uses CoronaParams class to create an event horizon.
         system.addTerrain(
                 "event_horizon",
                 new StarCoronaTerrainPlugin.CoronaParams(
@@ -115,7 +120,7 @@ public class MySystem {
                                 * StarSystemGenerator.random.nextFloat(),
                         starData.getCrLossMult()));
 
-        // Creates an entity token for the event horizon using the carona params, and
+        // Creates an entity token for the event horizon using the corona params, and
         // places it in orbit around the star.
         SectorEntityToken eventHorizon = system.addTerrain("event_horizon", new StarCoronaTerrainPlugin.CoronaParams(
                 star.getRadius() + corona, (star.getRadius() + corona) / 2.0F, (SectorEntityToken) star,
@@ -130,7 +135,11 @@ public class MySystem {
     final float stableLocation1Dist = 4000f;
     final float petrichorStationDist = 750f;
 
-    final float jumpFringeDist = 8000;
+    // final float jumpFringeDist = 8000f;
+
+    final float accretionDisk1Dist = 1250f;
+    final float accretionDiskMinDist = 0f;
+    final float accretionDisk2Dist = accretionDisk1Dist - 450;
 
     /* GENERATE METHOD */
     /* Invoke to generate the system */
@@ -145,13 +154,37 @@ public class MySystem {
         system.setLightColor(new Color(142, 81, 223));
 
         // Removing the corona entity completely
-        StarCoronaTerrainPlugin starCarona = Misc.getCoronaFor(petrichorBlackHole);
-        if (starCarona != null)
-            system.removeEntity(starCarona.getEntity());
+        StarCoronaTerrainPlugin starCorona = Misc.getCoronaFor(petrichorBlackHole);
+        if (starCorona != null)
+            system.removeEntity(starCorona.getEntity());
 
         // starName, terrainType, terrainRadius, windBurnLevel
         // flareProbability, crLossMult
         system.addCorona(petrichorBlackHole, "event_horizon", 350f, -10, 0, 25);
+
+        // Creating ring system around black hole
+        RingBandAPI petrichorAccretionDisk1 = system.addRingBand(
+                petrichorBlackHole, "misc", "rings_dust0",
+                512f, 0, null, 400f, accretionDisk1Dist, -150f
+        );
+        petrichorAccretionDisk1.setSpiral(true);
+        petrichorAccretionDisk1.setSpiralFactor(0.75f);
+        petrichorAccretionDisk1.setMinSpiralRadius(accretionDiskMinDist);
+
+        RingBandAPI petrichorAccretionDisk2 = system.addRingBand(
+                petrichorBlackHole, "misc", "rings_ice0",
+                512f, 0, null, 4000f, accretionDisk2Dist, -180f
+        );
+        petrichorAccretionDisk2.setSpiral(true);
+        petrichorAccretionDisk2.setSpiralFactor(0.75f);
+        petrichorAccretionDisk2.setMinSpiralRadius(accretionDiskMinDist);
+
+//        RingBandAPI petrichorAccretionDisk3 = system.addRingBand(
+//                petrichorBlackHole, "misc", "rings_dust0",
+//                1024f, 0, null, 450f, accretionDiskDist - 75, 252f
+//        );
+//        petrichorAccretionDisk3.setSpiral(true);
+//        petrichorAccretionDisk3.setSpiralFactor(1.1f);
 
         // Creating stable point entities, and setting their location.
         SectorEntityToken petrichorStableLocation1 = system.addCustomEntity("petrichor_stableLocation1",
