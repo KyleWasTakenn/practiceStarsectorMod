@@ -1,0 +1,18 @@
+{
+  "station_shield":{
+  "name":"Station Shield",
+  "descriptionId":"mymod_station_shield",
+  "tilt":-27, # left-right (>0 tilts to the left)
+  "pitch":2, # towards-away from the viewer (>0 pitches towards)
+  "rotation":-3, # degrees/second
+  "planetColor":[0,0,0,255],
+  "atmosphereThickness":0, # as fraction of radius.  Set to 0 for no atmosphere
+  "atmosphereThicknessMin":12, #  minimum thickness in pixels
+  "atmosphereColor":[0,0,0,0],
+  "texture":"graphics/mm/stations/station_shield.png",
+  "icon":"graphics/warroom/icon_planet.png",
+  "iconColor":[120,125,130,255],
+  "isStar":false,
+  "lightPosition":[-2,-8,10], # in planet radii.  Not used for stars.  z > 0 is above the playing field.
+  }
+}

@@ -7,9 +7,12 @@ import java.util.List;
 import com.fs.starfarer.api.Global;
 
 import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.impl.campaign.econ.impl.PlanetaryShield;
 import com.fs.starfarer.api.impl.campaign.ids.*;
 import com.fs.starfarer.api.impl.campaign.terrain.*;
 import com.fs.starfarer.api.impl.campaign.procgen.*;
+
+import com.fs.starfarer.api.campaign.PlanetSpecAPI;
 
 import com.fs.starfarer.api.campaign.econ.EconomyAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -132,7 +135,10 @@ public class MySystem {
     }
 
     // Distance variables (For easier adjustment and tweaks)
-    final float stableLocation1Dist = 4000f;
+    final float stableLocation1Dist = 3900f;
+    final float stableLocation2Dist = 2800f;
+    final float stableLocation3Dist = 1700f;
+
     final float petrichorStationDist = 750f;
 
     // final float jumpFringeDist = 8000f;
@@ -150,7 +156,11 @@ public class MySystem {
         system.getLocation().set(21000, -10000); // near Diable Avionics for testing
 
         // Creating the 'Star' / center of the system and adding a light color
-        PlanetAPI petrichorBlackHole = system.initStar("petrichor_bh", "black_hole", 150f, 0f);
+        PlanetAPI petrichorBlackHole = system.initStar(
+                "petrichor_bh",
+                "black_hole",
+                150f,
+                0f);
         system.setLightColor(new Color(142, 81, 223));
 
         // Removing the corona entity completely
@@ -162,7 +172,7 @@ public class MySystem {
         // flareProbability, crLossMult
         system.addCorona(petrichorBlackHole, "event_horizon", 350f, -10, 0, 25);
 
-        // Creating ring system around black hole
+        // Creating black hole accretion disk
         RingBandAPI petrichorAccretionDisk1 = system.addRingBand(
                 petrichorBlackHole, "misc", "rings_dust0",
                 512f, 0, null, 400f, accretionDisk1Dist, -150f
@@ -173,10 +183,10 @@ public class MySystem {
 
         RingBandAPI petrichorAccretionDisk2 = system.addRingBand(
                 petrichorBlackHole, "misc", "rings_ice0",
-                512f, 0, null, 4000f, accretionDisk2Dist, -180f
+                512f, 0, null, 400f, accretionDisk2Dist, -180f
         );
         petrichorAccretionDisk2.setSpiral(true);
-        petrichorAccretionDisk2.setSpiralFactor(0.75f);
+        petrichorAccretionDisk2.setSpiralFactor(1f);
         petrichorAccretionDisk2.setMinSpiralRadius(accretionDiskMinDist);
 
 //        RingBandAPI petrichorAccretionDisk3 = system.addRingBand(
@@ -187,48 +197,133 @@ public class MySystem {
 //        petrichorAccretionDisk3.setSpiralFactor(1.1f);
 
         // Creating stable point entities, and setting their location.
-        SectorEntityToken petrichorStableLocation1 = system.addCustomEntity("petrichor_stableLocation1",
-                "Stable Location", "stable_location", Factions.NEUTRAL);
+        SectorEntityToken petrichorStableLocation1 = system.addCustomEntity(
+                "petrichor_stableLocation1",
+                "Stable Location",
+                "stable_location",
+                Factions.NEUTRAL);
+        SectorEntityToken petrichorStableLocation2 = system.addCustomEntity(
+                "petrichor_stableLocation2",
+                "Stable Location",
+                "stable_location",
+                Factions.NEUTRAL);
+        SectorEntityToken petrichorStableLocation3 = system.addCustomEntity(
+                "petrichor_stableLocation3",
+                "Stable Location",
+                "stable_location",
+                Factions.NEUTRAL);
         // setCircularOrbit needs an object of type SectorEntityToken, a starting angle
         // (float), a distance from the centre (float), and orbit days
-        petrichorStableLocation1.setCircularOrbit(petrichorBlackHole, MathUtils.getRandomNumberInRange(0f, 360f),
-                stableLocation1Dist, 520);
+        petrichorStableLocation1.setCircularOrbit(
+                petrichorBlackHole,
+                MathUtils.getRandomNumberInRange(0f, 360f),
+                stableLocation1Dist,
+                520);
+        petrichorStableLocation2.setCircularOrbit(
+                petrichorBlackHole,
+                MathUtils.getRandomNumberInRange(0f, 360f),
+                stableLocation2Dist,
+                520);
+        petrichorStableLocation3.setCircularOrbit(petrichorBlackHole, MathUtils.getRandomNumberInRange(0f, 360f),
+                stableLocation3Dist, 520);
 
-        SectorEntityToken petrichorStation = system.addCustomEntity("petrichor_station", "Petrichor Station",
-                "mymod_petrichor_station", "pirates");
+        SectorEntityToken petrichorStation = system.addCustomEntity(
+                "petrichor_station",
+                "Petrichor Station",
+                "mymod_petrichor_station",
+                "pirates");
         petrichorStation.setCircularOrbitPointingDown(petrichorBlackHole, 0, petrichorStationDist, 220);
         petrichorStation.setCustomDescriptionId("test_petrichor_station");
 
+        SectorEntityToken petrichorStationShield = system.addCustomEntity(
+                "petrichor_station_shield",
+                "Petrichor Station Shield",
+                "mymod_petrichor_station_shield",
+                "pirates"
+        );
+
+        petrichorStationShield.setCircularOrbit(
+                petrichorStation,
+                0,
+                0,
+                0
+        );
+
+        petrichorStationShield.addTag(Tags.NON_CLICKABLE);
+
         // Creating the market for a planet / station:
         // factionID, PlanetAPI, Industries (can be null), display name, market size
-        // (int), market conditions (can be null), submarkets (black market etc)
-        MarketAPI petrichorMarket = addMarketplace("pirates", petrichorStation, null, "Petrichor Station", 4,
+        // (int), market conditions (can be null), submarkets (black market etc.)
+        MarketAPI petrichorMarket = addMarketplace(
+                "pirates",
+                petrichorStation,
+                null,
+                "Petrichor Station",
+                7,
                 Arrays.asList(
                         Conditions.POPULATION_4,
                         Conditions.NO_ATMOSPHERE,
                         Conditions.OUTPOST,
-                        Conditions.AI_CORE_ADMIN),
+                        Conditions.AI_CORE_ADMIN,
+                        Conditions.VERY_HOT,
+                        Conditions.ORGANIZED_CRIME,
+                        Conditions.PIRACY_RESPITE,
+                        Conditions.STEALTH_MINEFIELDS,
+                        Conditions.FRONTIER),
                 Arrays.asList(
+                        Submarkets.SUBMARKET_OPEN,
                         Submarkets.GENERIC_MILITARY,
                         Submarkets.SUBMARKET_STORAGE,
                         Submarkets.SUBMARKET_BLACK),
                 Arrays.asList(
                         Industries.POPULATION,
-                        Industries.SPACEPORT,
-                        Industries.BATTLESTATION_HIGH,
-                        Industries.HEAVYBATTERIES,
-                        Industries.MILITARYBASE,
+                        Industries.MEGAPORT,
                         Industries.ORBITALWORKS,
-                        Industries.WAYSTATION),
+                        Industries.WAYSTATION,
+                        Industries.STARFORTRESS_HIGH,
+                        Industries.HEAVYBATTERIES,
+                        Industries.HIGHCOMMAND,
+                        Industries.CRYOSANCTUM,
+                        Industries.FUELPROD,
+                        Industries.PLANETARYSHIELD),
                 0.05f,
                 false,
-                true);
+                true
+        );
 
         // Inserting AI cores into industries
-        petrichorMarket.getIndustry(Industries.MILITARYBASE).setAICoreId(Commodities.ALPHA_CORE);
-        petrichorMarket.getIndustry(Industries.BATTLESTATION_HIGH).setAICoreId(
-                Commodities.ALPHA_CORE);
-        petrichorMarket.getIndustry(Industries.ORBITALWORKS).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.HIGHCOMMAND).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.STARFORTRESS_HIGH).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.ORBITALWORKS).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.POPULATION).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.FUELPROD).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.MEGAPORT).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.WAYSTATION).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.HEAVYBATTERIES).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.PLANETARYSHIELD).setAICoreId(Commodities.ALPHA_CORE);
+        petrichorMarket.getIndustry(
+                Industries.CRYOSANCTUM).setAICoreId(Commodities.ALPHA_CORE);
+
+        // Inserting Industry items into industries
+        petrichorMarket.getIndustry(
+                Industries.ORBITALWORKS).setSpecialItem(new SpecialItemData("pristine_nanoforge", null));
+        petrichorMarket.getIndustry(
+                Industries.HEAVYBATTERIES).setSpecialItem(new SpecialItemData("drone_replicator", null));
+        petrichorMarket.getIndustry(
+                Industries.HIGHCOMMAND).setSpecialItem(new SpecialItemData("cryoarithmetic_engine", null));
+        petrichorMarket.getIndustry(
+                Industries.FUELPROD).setSpecialItem(new SpecialItemData("synchrotron", null));
+        petrichorMarket.getIndustry(
+                Industries.MEGAPORT).setSpecialItem(new SpecialItemData("fullerene_spool", null));
 
         // Manual jumppoint creation
         // JumpPointAPI jumpPointFringe =

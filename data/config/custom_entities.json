@@ -18,5 +18,29 @@
 		"scaleNameWithZoom":false,
 		"tags":["station"],
 		"layers":[STATIONS]
+	},
+
+		"mymod_petrichor_station_shield":{
+		"defaultName":"Petrichor Station",
+		"defaultRadius":70,
+		"customDescriptionId":"mymod_petrichor_station",
+		"icon":"graphics/icons/station0.png",
+		"iconWidth":24,
+		"iconHeight":24,
+		"sprite":"graphics/mm/stations/station_shield.png",
+		"spriteWidth":120,
+		"spriteHeight":120,
+			"tilt": -27,
+			"pitch": 2,
+			"rotation": -3,
+		"renderShadow":false,
+		"useLightColor":true,
+		"showInCampaign":true,
+		"showIconOnMap":false,
+		"showNameOnMap":false,
+		"scaleNameWithZoom":false,
+		"tags":["planet"],
+		"layers":[STATIONS]
 	}
 }
+
