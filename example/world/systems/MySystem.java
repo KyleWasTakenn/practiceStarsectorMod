@@ -235,21 +235,22 @@ public class MySystem {
         petrichorStation.setCircularOrbitPointingDown(petrichorBlackHole, 0, petrichorStationDist, 220);
         petrichorStation.setCustomDescriptionId("test_petrichor_station");
 
-        SectorEntityToken petrichorStationShield = system.addCustomEntity(
-                "petrichor_station_shield",
-                "Petrichor Station Shield",
-                "mymod_petrichor_station_shield",
-                "pirates"
-        );
 
-        petrichorStationShield.setCircularOrbit(
-                petrichorStation,
-                0,
-                0,
-                0
-        );
-
-        petrichorStationShield.addTag(Tags.NON_CLICKABLE);
+//        SectorEntityToken petrichorStationShield = system.addCustomEntity(
+//                "petrichor_station_shield",
+//                "Petrichor Station Shield",
+//                "mymod_petrichor_station_shield",
+//                "pirates"
+//        );
+//
+//        petrichorStationShield.setCircularOrbit(
+//                petrichorStation,
+//                0,
+//                0,
+//                0
+//        );
+//
+//        petrichorStationShield.addTag(Tags.NON_CLICKABLE);
 
         // Creating the market for a planet / station:
         // factionID, PlanetAPI, Industries (can be null), display name, market size
