@@ -7,21 +7,13 @@ import java.util.List;
 import com.fs.starfarer.api.Global;
 
 import com.fs.starfarer.api.campaign.*;
-import com.fs.starfarer.api.impl.campaign.econ.impl.PlanetaryShield;
 import com.fs.starfarer.api.impl.campaign.ids.*;
 import com.fs.starfarer.api.impl.campaign.terrain.*;
 import com.fs.starfarer.api.impl.campaign.procgen.*;
 
-import com.fs.starfarer.api.campaign.PlanetSpecAPI;
-
 import com.fs.starfarer.api.campaign.econ.EconomyAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 
-// import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor;
-// import com.fs.starfarer.api.impl.campaign.procgen.StarGenDataSpec;
-// import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator;
-// import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin;
-// import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin;
 import com.fs.starfarer.api.util.Misc;
 
 import org.lazywizard.lazylib.MathUtils;
@@ -134,6 +126,113 @@ public class MySystem {
         eventHorizon.setCircularOrbit((SectorEntityToken) star, 0.0F, 0.0F, 100.0F);
     }
 
+    public final void convertToBlackhole(
+            PlanetAPI star,
+            StarSystemAPI system,
+            Float ehRadius,
+            Float ehPullRate, // Must be negative value! Positive pushes player away.
+            Float crLossMult
+            )
+    {
+        // Radius, PullRate, LossMult: can be null for defaults
+        if (ehRadius == null) {
+            ehRadius = 350f; // Vanilla's default
+        }
+
+        if (ehPullRate == null) {
+            ehPullRate = -10f; // Vanilla's default
+        }
+
+        if (crLossMult == null) {
+            crLossMult = 25f; // Vanilla's default
+        }
+
+        if (ehPullRate >= 0) {
+            throw new IllegalArgumentException("Input must be a negative float, got: " + ehPullRate);
+        }
+
+        StarCoronaTerrainPlugin starCorona = Misc.getCoronaFor(star);
+        if (starCorona != null)
+            system.removeEntity(starCorona.getEntity());
+
+        // starName, terrainType, terrainRadius, windBurnLevel, flareProbability, crLossMultiplier
+        // 350f, -10f, 0f, 25f are the base-game default variables for an event horizon.
+        system.addCorona(
+                star,
+                "event_horizon",
+                ehRadius,
+                ehPullRate,
+                0f, crLossMult
+        );
+    }
+
+    public final void createAccretionDisks(
+            PlanetAPI star,
+            StarSystemAPI system,
+            Float diskMinDist, // Distance of the closest of the rings. Each ring will be +400SU away.
+            String texture1,
+            String texture2,
+            Float textureWidth,
+            Float engineWidth,
+            Color diskColor,
+            Float orbitInterval // Set to negative to match spiral path.
+
+    )
+    {
+        // defaults for texture1, texture2, textureWidth, engineWidth
+        // Color can be null as well.
+        if (texture1 == null) {
+            texture1 = "rings_dust0";
+        }
+
+        if (texture2 == null) {
+            texture2 = "rings_ice0";
+        }
+
+        if (textureWidth == null) {
+            textureWidth = 512f;
+        }
+
+        if (engineWidth == null) {
+            engineWidth = 400f;
+        }
+
+        // Creating black hole accretion disks
+        // "rings_dust0", "rings_ice0" are default textures
+        // focus, category, texture, textureWidth, index, color, engineWidth, distance, orbit days
+        RingBandAPI AccretionDisk1 = system.addRingBand(
+                star, "misc", texture1,
+                textureWidth, 0, null, engineWidth, diskMinDist, orbitInterval
+        );
+        AccretionDisk1.setSpiral(true);
+        AccretionDisk1.setSpiralFactor(0.5f);
+        AccretionDisk1.setMinSpiralRadius(0f);
+
+        RingBandAPI AccretionDisk2 = system.addRingBand(
+                star, "misc", texture2,
+                textureWidth, 0, null, engineWidth, diskMinDist + 400f, orbitInterval
+        );
+        AccretionDisk2.setSpiral(true);
+        AccretionDisk2.setSpiralFactor(1f);
+        AccretionDisk2.setMinSpiralRadius(0f);
+
+        RingBandAPI AccretionDisk3 = system.addRingBand(
+                star, "misc", texture1,
+                textureWidth, 0, null, engineWidth, diskMinDist + 800f, orbitInterval
+        );
+        AccretionDisk2.setSpiral(true);
+        AccretionDisk2.setSpiralFactor(1.5f);
+        AccretionDisk2.setMinSpiralRadius(0f);
+
+        RingBandAPI AccretionDisk4 = system.addRingBand(
+                star, "misc", texture2,
+                textureWidth, 0, null, engineWidth, diskMinDist + 1200f, orbitInterval
+        );
+        AccretionDisk4.setSpiral(true);
+        AccretionDisk4.setSpiralFactor(2f);
+        AccretionDisk4.setMinSpiralRadius(0f);
+    }
+
     // Distance variables (For easier adjustment and tweaks)
     final float stableLocation1Dist = 3900f;
     final float stableLocation2Dist = 2800f;
@@ -141,21 +240,17 @@ public class MySystem {
 
     final float petrichorStationDist = 750f;
 
-    // final float jumpFringeDist = 8000f;
-
-    final float accretionDisk1Dist = 1250f;
-    final float accretionDiskMinDist = 0f;
-    final float accretionDisk2Dist = accretionDisk1Dist - 450;
+//    final float accretionDisk1Dist = 1250f;
+//    final float accretionDiskMinDist = 0f;
+//    final float accretionDisk2Dist = accretionDisk1Dist - 450;
 
     /* GENERATE METHOD */
     /* Invoke to generate the system */
     public void generate(SectorAPI sector) {
 
-        // Setting location of the system on the sector map
         StarSystemAPI system = sector.createStarSystem("Petrichor");
         system.getLocation().set(21000, -10000); // near Diable Avionics for testing
 
-        // Creating the 'Star' / center of the system and adding a light color
         PlanetAPI petrichorBlackHole = system.initStar(
                 "petrichor_bh",
                 "black_hole",
@@ -163,38 +258,25 @@ public class MySystem {
                 0f);
         system.setLightColor(new Color(142, 81, 223));
 
-        // Removing the corona entity completely
-        StarCoronaTerrainPlugin starCorona = Misc.getCoronaFor(petrichorBlackHole);
-        if (starCorona != null)
-            system.removeEntity(starCorona.getEntity());
-
-        // starName, terrainType, terrainRadius, windBurnLevel
-        // flareProbability, crLossMult
-        system.addCorona(petrichorBlackHole, "event_horizon", 350f, -10, 0, 25);
-
-        // Creating black hole accretion disk
-        RingBandAPI petrichorAccretionDisk1 = system.addRingBand(
-                petrichorBlackHole, "misc", "rings_dust0",
-                512f, 0, null, 400f, accretionDisk1Dist, -150f
+        convertToBlackhole(
+                petrichorBlackHole,
+                system,
+                null,
+                null,
+                null
         );
-        petrichorAccretionDisk1.setSpiral(true);
-        petrichorAccretionDisk1.setSpiralFactor(0.75f);
-        petrichorAccretionDisk1.setMinSpiralRadius(accretionDiskMinDist);
 
-        RingBandAPI petrichorAccretionDisk2 = system.addRingBand(
-                petrichorBlackHole, "misc", "rings_ice0",
-                512f, 0, null, 400f, accretionDisk2Dist, -180f
+        createAccretionDisks(
+                petrichorBlackHole,
+                system,
+                800f,
+                null,
+                null,
+                800f,
+                800f,
+                null,
+                -180f
         );
-        petrichorAccretionDisk2.setSpiral(true);
-        petrichorAccretionDisk2.setSpiralFactor(1f);
-        petrichorAccretionDisk2.setMinSpiralRadius(accretionDiskMinDist);
-
-//        RingBandAPI petrichorAccretionDisk3 = system.addRingBand(
-//                petrichorBlackHole, "misc", "rings_dust0",
-//                1024f, 0, null, 450f, accretionDiskDist - 75, 252f
-//        );
-//        petrichorAccretionDisk3.setSpiral(true);
-//        petrichorAccretionDisk3.setSpiralFactor(1.1f);
 
         // Creating stable point entities, and setting their location.
         SectorEntityToken petrichorStableLocation1 = system.addCustomEntity(
