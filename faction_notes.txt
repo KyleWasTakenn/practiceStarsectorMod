@@ -1,0 +1,57 @@
+Faction notes:
+The faction operates similar to pirates. It leans chaotic evil/chaotic neutral. The faction holds a large marketshare in Heavy weapons, Marines, and Harvested organs.
+Operates in the fringes of the sector through outposts.
+Fleet doctrine should focus on small ships, and contain mostly EMP weaponry and phase ships. This faction makes its credits through smuggling, bounty hunting, ransom, and covert operations.
+
+Inspirations:
+Threat, Abyssal shrouds, Remnants.
+
+Doctrine:
+- Small ships, phase ships, EMP, geurilla warfare & wolfpack tactics.
+- Very, very few (or no) large ships.
+     - Frigate and Destoryer sized logistics ships with phase.
+
+Focuses:
+- Raiding, smuggling, geurilla warfare.
+
+Theme:
+Pirates, Mid/High tech, AI, cult influence, mad scientists
+- Kitbashed phase ships
+	- Want to keep in line with how the Starsector vanilla pirates operate. Stolen ships with modifications.
+	- Can have original ships too, but want to keep them from being too fancy.
+- Chaotic evil / Chaotic neutral
+	- No illegal commodities, very few allies, out for themselves.
+	- Makes most of their money off of Smuggling, bounty-hunting, 
+- Influence from Threat, or Shroud. Possibly 'cultic'
+	- Think almost luddic path, but the opposite side of the coin.
+	- Largely ran by AI, 'worships' other AI and things the church would deem heretical.
+	
+How does the player fit in?:
+- Humans have 3 roles in the faction: Slaves, Organ bags, and Spies/agents. The player would be the latter.
+	- Though the ships and majority of their society are largely operated by AI through nanobots and robot bodies, humans still make the best spies. [FACTION NAME] Genetically modifies, cybernetically enhances, and trains
+	humans from birth to fill this role. Some may specialize in piloting, while some specialize as agents.
+
+
+
+Idea board:
+- Spawns stations similar to pirates / pathers.
+	- Stations always have mines.
+- Heavily uses agents in Nexerelin.
+- Lots of smugglers
+	- Stations mass-produce harvested organs, drugs, maybe even produce AI cores.
+	- Stations should also produce a lot of heavy weapons, and marines. Possibly using a custom marines item that is slightly stronger (and to match the theme of the faction using mostly AI / robots)
+- Modified version of Phase field (Possibly slightly stronger, but mostly for flavor)
+- Modified version of ground defenses (Possibly slightly stronger, but mostly for flavor)
+- Maybe require SiC mod as a dependancy and make the majority of ships automated
+    - Possibly a custom XO tree.
+
+CUSTOM INDUSTRIES:
+- Organ-producing building to fit flavor.
+	- Possibly take their victims phyrexia-style, and use some sort of stem-cell treatment to infinitely harvest organs.
+	- Could also be flavored as a task force / privateer who brings back organs from bounty-hunter targets.
+	- Could also produce artifical organs (custom commodity)
+- Marine-producing building to fit flavor.
+- Drug-producing building to fit flavor.
+
+- Stations always have mines and planetary shield
+- Custom station

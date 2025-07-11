@@ -235,7 +235,7 @@ public class MySystem {
         petrichorStation.setCircularOrbitPointingDown(petrichorBlackHole, 0, petrichorStationDist, 220);
         petrichorStation.setCustomDescriptionId("test_petrichor_station");
 
-
+        /* Code for custom planetary shield around Petrichor Station */
 //        SectorEntityToken petrichorStationShield = system.addCustomEntity(
 //                "petrichor_station_shield",
 //                "Petrichor Station Shield",
