@@ -2,7 +2,8 @@
 	"mymod_petrichor_station":{
 		"defaultName":"Petrichor Station",
 		"defaultRadius":70,
-		"customDescriptionId":"mymod_petrichor_station",
+		"customDescriptionId":"desc_petrichor_station",
+		"description":"Testing descriptions!! Wiwiwi",
 		"interactionImage":"graphics/illustrations/jangala_station.jpg",
 		"icon":"graphics/icons/station0.png",
 		"iconWidth":24,
