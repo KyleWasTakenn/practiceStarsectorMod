@@ -3,16 +3,12 @@ import example.HelperMethods;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.List;
-
-import com.fs.starfarer.api.Global;
 
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.impl.campaign.ids.*;
 import com.fs.starfarer.api.impl.campaign.terrain.*;
 import com.fs.starfarer.api.impl.campaign.procgen.*;
 
-import com.fs.starfarer.api.campaign.econ.EconomyAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 
 import com.fs.starfarer.api.util.Misc;
@@ -24,8 +20,8 @@ public class MySystem {
     final float commDist = 500f;
     final float jumpDist = 9000f;
 
-    final float stableLocation2Dist = 2800f;
-    final float stableLocation3Dist = 1700f;
+    final float stableLocation1Dist = 3000f;
+    final float stableLocation2Dist = 2500f;
 
     final float petrichorStationDist = 750f;
 
@@ -84,7 +80,7 @@ public class MySystem {
                 "petrichor_station", // id
                 "Petrichor Station", // name
                 "mymod_petrichor_station", // custom_entity.json id
-                "pirates" // faction
+                "veil_syndicate" // faction
         );
         petrichorStation.setCircularOrbitPointingDown(
                 petrichorBlackHole,
@@ -99,21 +95,15 @@ public class MySystem {
                 "petrichor_comm_relay",
                 "Petrichor Comm Relay",
                 "comm_relay",
-                Factions.PIRATES
+                Factions.NEUTRAL
         );
-//        SectorEntityToken petrichorStableLocation1 = system.addCustomEntity(
-//                "petrichor_stableLocation1",
-//                "Stable Location",
-//                "stable_location",
-//                Factions.NEUTRAL
-//        );
-        SectorEntityToken petrichorStableLocation2 = system.addCustomEntity(
+        SectorEntityToken petrichorStableLocation1 = system.addCustomEntity(
                 "petrichor_stable_location2",
                 "Stable Location",
                 "stable_location",
                 Factions.NEUTRAL
         );
-        SectorEntityToken petrichorStableLocation3 = system.addCustomEntity(
+        SectorEntityToken petrichorStableLocation2 = system.addCustomEntity(
                 "petrichor_stable_location3",
                 "Stable Location",
                 "stable_location",
@@ -132,16 +122,16 @@ public class MySystem {
                 commDist, // Distance from focus
                 520f // orbitDays
         );
+        petrichorStableLocation1.setCircularOrbit(
+                petrichorBlackHole,
+                MathUtils.getRandomNumberInRange(0f, 360f),
+                stableLocation1Dist,
+                520f
+        );
         petrichorStableLocation2.setCircularOrbit(
                 petrichorBlackHole,
                 MathUtils.getRandomNumberInRange(0f, 360f),
                 stableLocation2Dist,
-                520f
-        );
-        petrichorStableLocation3.setCircularOrbit(
-                petrichorBlackHole,
-                MathUtils.getRandomNumberInRange(0f, 360f),
-                stableLocation3Dist,
                 520f
         );
         petrichorJump.setCircularOrbit(
@@ -153,7 +143,7 @@ public class MySystem {
 
         // Creating market
         MarketAPI petrichorMarket = HelperMethods.addMarketplace(
-                "pirates",
+                "veil_syndicate",
                 petrichorStation,
                 null,
                 "Petrichor Station",

@@ -1,0 +1,2 @@
+Needs a glow_1.png and glow_2.png for phase functionality.
+See vanilla phase ship textures for example

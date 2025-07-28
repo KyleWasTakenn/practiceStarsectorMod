@@ -22,25 +22,23 @@
 	},
 
 		"mymod_petrichor_station_shield":{
-		"defaultName":"Petrichor Station",
+		"defaultName":"Petrichor Shield",
 		"defaultRadius":70,
-		"customDescriptionId":"mymod_petrichor_station",
+		"customDescriptionId":"desc_petrichor_station_shield",
+		"description":"Testing descriptions!! Wiwiwi",
 		"icon":"graphics/icons/station0.png",
 		"iconWidth":24,
 		"iconHeight":24,
 		"sprite":"graphics/mm/stations/station_shield.png",
 		"spriteWidth":120,
 		"spriteHeight":120,
-			"tilt": -27,
-			"pitch": 2,
-			"rotation": -3,
-		"renderShadow":false,
+		"renderShadow":true,
 		"useLightColor":true,
 		"showInCampaign":true,
-		"showIconOnMap":false,
+		"showIconOnMap":true,
 		"showNameOnMap":false,
 		"scaleNameWithZoom":false,
-		"tags":["planet"],
+		"tags":["station"],
 		"layers":[STATIONS]
 	}
 }
